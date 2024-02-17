@@ -1,9 +1,26 @@
-from fastapi import FastAPI, Body
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Body ,Path, Query, HTTPException # Importamos la clase FastAPI para instanciar nuestra API y la clase Body para validar los datos
+from pydantic import BaseModel, Field # Importamos la clase BaseModel para validar los datos y la clase field para definir los campos
+from typing import Optional, List
+from fastapi.responses import HTMLResponse, JSONResponse # Importamos las clases HTMLResponse y JSONResponse para cambiar el tipo de respuesta
 
 # Instanciamos FastAPI
 
 app = FastAPI()
+
+
+# Creamos un schema para validar los datos 
+class Movie(BaseModel):
+    id: Optional[int] = None
+    title: str = Field(default="Mi Pelicula", min_length=5, max_length=30)
+    overview: str = Field(default="Descripcion de la película", min_length=10, max_length=300)
+    year: int = Field(default=2022, le=2022)
+    rating: float = Field(default=10, ge=0, le=10)
+    category: str = Field(default="Comedia", min_length=3, max_length=15)
+
+class User(BaseModel):
+    email: str
+    password: str
+
 
 # Cambiamos la documentacion
 app.title = "API De Peliculas"
@@ -77,6 +94,7 @@ movies = [
 ]
 
 
+
 # Creamos los endpoints
 @app.get("/",tags=["home"])
 def message():
@@ -88,27 +106,52 @@ def message():
     )
     
 # Creamos un endpoint para obtener todas las peliculas
-@app.get("/movies", tags=["movies"])
+@app.get("/movies", tags=["movies"], response_model=List[Movie], status_code=200)
 def getMovies():
-    return movies
+    return JSONResponse(status_code=200, content=movies)
 
 # Creamos un endpoin para obtener una pelicula por su id
-@app.get("/movies/{id}", tags=["movies"])
-def getMovie(id: int):
-    for movie in movies:
-        if movie["id"] == id:
-            return movie
-    return {"message": "Pelicula no encontrada"}
 
+@app.get("/movies/{id}", tags=['movies'])
+def getMovie(id: int = Path(ge=1, le=2000)):
+    movie = next((movie for movie in movies if movie['id'] == id), None)
+    if movie is not None:
+        return movie
+    else:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    
 # Creamos un endpoint para obtener una pelicula por su categoria
-@app.get("/movies/category/{category}", tags=["movies"])
-def getMovieByCategory(category: str):
-    movieList = []  # Creamos una lista vacia para almacenar las peliculas con la categoria solicitada
-    for movie in movies:            #Iteramos sobre todas las peliculas
-        if movie["category"] == category:
-            movieList.append(movie)     #Si la categoria conincide con la solicitada, agregamos la pelicula a la lista
-    if len(movieList) > 0:  #Si la lista no esta vacia, retornamos la lista
-        return movieList
-    return {"message": "No se encontraron peliculas en esa categoria"}
+@app.get("/movies/", tags=['movies'], response_model=List[Movie], status_code = 200 )
+def getMovieByCategory(category: str = Query(min_length=3, max_length=15)):
+    getMovieByCategory = [movie for movie in movies if movie['category'] == category]
+    return JSONResponse(status_code=200, content=getMovieByCategory)
+
+
+# Craamos un endpoint para modificar una pelicula
+@app.post("/movies", tags=['movies'])
+def createMovie(movie: Movie):
+    movies.append(movie)
+    return JSONResponse(status_code=201, content={"message": "Movie created successfully"})
+# Funcion para actualizar una pelicula
+@app.put("/movies/{id}", tags=['movies'], response_model=dict, status_code=200)
+def updateMovie(id: int,
+                movie: Movie):
+    for movie in movies:
+        if movie['id'] == id:
+            movie['title'] = movie.title
+            movie['overview'] = movie.overview
+            movie['year'] = movie.year
+            movie['rating'] = movie.rating
+            movie['category'] = movie.category
+    return JSONResponse(content={"message": "Movie updated successfully"}, status_code=200)
+
+# Funcion para eliminar una pelicula
+@app.delete("/movies/{id}", tags=['movies'],response_model= dict,status_code=200)
+def deleteMovie(id: int):
+    for movie in movies:
+        if movie['id'] == id:
+            movies.remove(movie)
+            break
+    return JSONResponse(content={"message": "Movie deleted succesfully"}, status_code=200)
 
 
