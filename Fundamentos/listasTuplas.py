@@ -56,9 +56,6 @@ def inversionTupla():
     main()
 
 
-
-
-
 # Funcion main del programa
 def main():
     print("1. Mayores y Menores")
