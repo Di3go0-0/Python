@@ -31,10 +31,11 @@ def login(user: User) -> dict:
     return response
 
 
-@router.post('/logout', tags=['Auth'], response_model=dict, status_code=200, dependencies=[Depends(JWTBearer())])
-def logout(token: str) -> dict:
-    AuthService(Session()).logout(token)
-    return JSONResponse(content={"message": "Logout successfully"}, status_code=200)
+@router.post('/logout', tags=['Auth'], response_model=dict, status_code=200)
+def logout() -> dict:
+    response = JSONResponse(content={"message": "Logout successful"}, status_code=200)
+    response.delete_cookie(key="token")
+    return response
 
 
 @router.delete("/user/{id}", tags=['Auth'], response_model=dict)
