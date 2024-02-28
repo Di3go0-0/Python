@@ -66,4 +66,12 @@ class TaskServices:
             self.db.commit()
             return task
         return None
+    def deleteAllTaskByUserId(self, userId: int):
+        tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId).all()
+        if tasks:
+            for task in tasks:
+                self.db.delete(task)
+            self.db.commit()
+            return tasks
+        return None
         

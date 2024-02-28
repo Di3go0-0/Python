@@ -34,9 +34,13 @@ class AuthService():
         return result
     
     def deleteUser(self, id:int):
-        movie = self.getUser(id)
-        self.db.delete(movie)
+        user = self.db.query(UserModel).filter(UserModel.id == id).first()
+        if user is None:
+            return None
+        self.db.delete(user)
         self.db.commit()
+        return True
+        
                
                
 

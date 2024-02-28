@@ -5,6 +5,7 @@ from schemas.userSchema import User
 from config.db import Session
 from services.authServices import AuthService
 from middlewares.jwtBearer import JWTBearer
+from services.taskServices import TaskServices
 
 
 
@@ -38,10 +39,11 @@ def logout(token: str) -> dict:
 
 @router.delete("/user/{id}", tags=['Auth'], response_model=dict)
 def deleteUser(id: int) -> dict:
-    if not AuthService(Session()).getUser(id):
+    TaskServices(Session()).deleteAllTaskByUserId(id)
+    result = AuthService(Session()).deleteUser(id)
+    if not result:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
-    AuthService(Session()).deleteUser(id)
-    return JSONResponse(content={"message": "User deleted successfully"})
+    return JSONResponse(content={"message": "User deleted successfully"}, status_code=200)
 
 
 @router.get('/user/{id}', tags=['Auth'], response_model=User)
