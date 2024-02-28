@@ -11,6 +11,12 @@ class TaskServices:
         tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId).all()
         return tasks
     
+    def getTask(self,taskId:id, userId: id):
+        task = self.db.query(TaskModel).filter(TaskModel.id == taskId, TaskModel.userId == userId).first()
+        if task:
+            return task
+        return None
+    
     def getTaskDone(self, userId: int):
         tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == True).all()
         return tasks
@@ -19,13 +25,13 @@ class TaskServices:
         tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == False).all()
         return tasks
     
-    def taskDone(self, taskId: int):
+    def doneTask(self, taskId: int):
         task = self.db.query(TaskModel).filter(TaskModel.id == taskId).first()
         if task:
             task.done = True
             self.db.commit()
             self.db.refresh(task)
-        return task
+        return task 
     
     def getIdCurrentUser(self, request: Request):
         token = request.cookies.get('token')
@@ -43,3 +49,21 @@ class TaskServices:
         self.db.refresh(newTask)
         return newTask
     
+    def updateTask(self, taskId: int, task: TaskSchema):
+        taskToUpdate = self.db.query(TaskModel).filter(TaskModel.id == taskId).first()
+        if taskToUpdate:
+            taskToUpdate.title = task.title
+            taskToUpdate.description = task.description
+            self.db.commit()
+            self.db.refresh(taskToUpdate)
+            return taskToUpdate
+        return None
+    
+    def deleteTask(self, taskId: int):
+        task = self.db.query(TaskModel).filter(TaskModel.id == taskId).first()
+        if task:
+            self.db.delete(task)
+            self.db.commit()
+            return task
+        return None
+        
