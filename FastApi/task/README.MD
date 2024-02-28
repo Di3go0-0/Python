@@ -17,6 +17,7 @@ Podemos crear tareas, obtener tarea por id, solo podemos acceder a las tareas qu
 ## Ejecución
 
 Una vez instaladas las dependencias, puedes ejecutar el proyecto con el siguiente comando:
+recuerda que el puerto lo puedes cambiar a tu gusto.
 
 ```bash
 uvicorn main:app --reload --port 8000
