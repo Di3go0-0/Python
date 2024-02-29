@@ -1,8 +1,7 @@
 from models.userModel import User as UserModel
 from schemas.userSchema import User
 from fastapi.responses import JSONResponse
-from utils.jwt import createToken
-import logging
+import bcrypt
 
 class AuthService():
     def __init__(self, db) -> None:
@@ -16,15 +15,17 @@ class AuthService():
             raise ValueError(f"Email {user.email} is already in use")
 
         # Si el correo electrónico no está en uso, registrar al nuevo usuario
+        hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+        user.password = hashed_password.decode('utf-8')  # Guardar la contraseña hasheada en el modelo
         new_user = UserModel(**user.model_dump())
         self.db.add(new_user)
         self.db.commit()
                
     def login (self, email:str, password:str):
-        result = self.db.query(UserModel).filter(UserModel.email == email, UserModel.password == password).first()
-        if not result:
+        user = self.db.query(UserModel).filter(UserModel.email == email).first()
+        if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
             return None
-        return result.toDict()
+        return user.toDict()
     
     def logout (self, token: str):
         pass

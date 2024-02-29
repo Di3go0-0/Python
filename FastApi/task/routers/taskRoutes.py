@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Path, Query, Depends
+from fastapi import APIRouter, Request, Response, Path, Query, Depends
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from typing import List
@@ -7,6 +7,7 @@ from middlewares.jwtBearer import JWTBearer
 from schemas.taskSchema import Task
 from services.taskServices import TaskServices as TaskService
 from models.userModel import User
+from utils.jwt import validateToken
 
 
 
@@ -15,8 +16,10 @@ router = APIRouter()
 @router.get('/task', tags=['Task'], response_model=List[Task], status_code=200, dependencies=[Depends(JWTBearer())])
 def getTasks(request: Request):
     userId = TaskService(Session()).getIdCurrentUser(request)
+    print(userId)
     tasks = TaskService(Session()).getTasks(userId)
     return tasks
+
 
 @router.get('/task/{taskId}', tags=['Task'], response_model=Task, status_code=200, dependencies=[Depends(JWTBearer())])
 def getTaskById(taskId: int, request: Request):
@@ -61,7 +64,11 @@ def updateTaskById(taskId: int, task: Task):
     return JSONResponse(content={"message": "Task updated successfully"}, status_code=200)
 
 @router.delete('/task/{taskId}', tags=['Task'], status_code=200,  dependencies=[Depends(JWTBearer())])
-def deleteTaskById(taskId: int):
+def deleteTaskById(taskId: int, request: Request):
+    UserId = TaskService(Session()).getIdCurrentUser(request)
+    task = TaskService(Session()).getTask(taskId, UserId)
+    if not task:
+        return JSONResponse(content={"message": "Task not found or does not belong to you"}, status_code=404)
     TaskService(Session()).deleteTask(taskId)
     return JSONResponse(content={"message": "Task deleted successfully"}, status_code=200)
 

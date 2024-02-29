@@ -35,6 +35,7 @@ class TaskServices:
     
     def getIdCurrentUser(self, request: Request):
         token = request.cookies.get('token')
+        print(token)
         if token:
             tokenData = validateToken(token)
             return tokenData['id']
