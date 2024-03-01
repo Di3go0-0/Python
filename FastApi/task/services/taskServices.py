@@ -25,17 +25,17 @@ class TaskServices:
         tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == False).all()
         return tasks
     
-    def doneTask(self, taskId: int):
+    def toggleTask(self, taskId: int):
         task = self.db.query(TaskModel).filter(TaskModel.id == taskId).first()
         if task:
-            task.done = True
+            task.done = not task.done
             self.db.commit()
             self.db.refresh(task)
-        return task 
+        return task
     
     def getIdCurrentUser(self, request: Request):
         token = request.cookies.get('token')
-        print(token)
+        # print(token)
         if token:
             tokenData = validateToken(token)
             return tokenData['id']

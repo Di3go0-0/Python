@@ -1,6 +1,6 @@
 # API de Tareas
 
-El proyecto es un api de tareas, en la api nos podemos registar, loguearnos y desloguearnos, podemos obtener un usuario por id, podemos eliminar un usuario por id, al momento de eliminar un usuario se eliminan las tareas que haya creado ese usuario.
+El proyecto es un api de tareas en Python 3.12.2, en la api nos podemos registar, loguearnos y desloguearnos, podemos obtener un usuario por id, podemos eliminar un usuario por id, al momento de eliminar un usuario se eliminan las tareas que haya creado ese usuario.
 
 Podemos crear tareas, obtener tarea por id, solo podemos acceder a las tareas que nosotros creamos, pasar las tareas de estado a completada, podemos filtrar tareas por tareas hechas y no hechas, tambien podemos eliminar una tarea por id y por ultimo podemos modificar las tareas.
 

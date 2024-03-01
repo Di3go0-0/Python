@@ -45,10 +45,11 @@ def getTaskNotDone(request: Request):
     tasks = TaskService(Session()).getTaskNotDone(userId)
     return tasks
 
-@router.post('/task/{taskId}', tags=['Task'], status_code=200, dependencies=[Depends(JWTBearer())])
-def doneTask(taskId: int):
-    task = TaskService(Session()).doneTask(taskId)
-    return JSONResponse(content={"message": "Task done successfully"}, status_code=200)
+
+@router.patch('/taskToggle/{taskId}', tags=['Task'], status_code=200, dependencies=[Depends(JWTBearer())])
+def toggleTask(taskId: int):
+    task = TaskService(Session()).toggleTask(taskId)
+    return JSONResponse(content={"message": "Task toggled successfully"}, status_code=200)
 
 
 # Dependencia para obtener una sesión de base de datos

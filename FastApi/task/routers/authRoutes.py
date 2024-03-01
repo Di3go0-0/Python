@@ -38,7 +38,7 @@ def logout() -> dict:
     return response
 
 
-@router.delete("/user/{id}", tags=['Auth'], response_model=dict)
+@router.delete("/user/{id}", tags=['Auth'], response_model=dict, dependencies = [Depends(JWTBearer())])
 def deleteUser(id: int) -> dict:
     TaskServices(Session()).deleteAllTaskByUserId(id)
     result = AuthService(Session()).deleteUser(id)

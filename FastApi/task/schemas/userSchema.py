@@ -10,7 +10,7 @@ from typing import Optional
 class User(BaseModel):
     id: Optional[int] = None
     email: EmailStr
-    password: str = Field(min_length=4, max_length=30)
+    password: str = Field(min_length=4, max_length=100)
     
     # Configuracion de la documentacion
     class Config:
