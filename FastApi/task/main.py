@@ -9,8 +9,8 @@ import uvicorn
 app = FastAPI()
 
 # Renombramos la documentacion
-app.title = "Proyecto Final"""
-app.version = "1.0.0"
+app.title = "Task"
+app.version = "1.0.2"
 app.description = "API proyecto final Backend-fastapi"
 
 app.add_middleware(ErrorHandler) # Agregamos el middleware de manejo de errores

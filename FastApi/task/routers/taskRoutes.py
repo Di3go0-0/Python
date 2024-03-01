@@ -29,28 +29,18 @@ def getTaskById(taskId: int, request: Request):
         return task
     return JSONResponse(content={"message": "task not found or does not belong to you"}, status_code=404)
 
-@router.get('/taskDone', tags=['Task'], response_model=List[Task], status_code=200, dependencies=[Depends(JWTBearer())])
-def getTaskDone(request: Request):
+@router.get('/task/', tags=['Task'], response_model=List[Task], status_code=200, dependencies=[Depends(JWTBearer())])
+def getTaskDontOrNotDone(request: Request, done: bool):
     userId = TaskService(Session()).getIdCurrentUser(request)
     if userId is None:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
-    tasks = TaskService(Session()).getTaskDone(userId)
+    tasks = TaskService(Session()).getTaskDontOrNotDone(userId, done)
     return tasks
-
-@router.get('/taskNotDone', tags=['Task'], response_model=List[Task], status_code=200, dependencies=[Depends(JWTBearer())])
-def getTaskNotDone(request: Request):
-    userId = TaskService(Session()).getIdCurrentUser(request)
-    if userId is None:
-        return JSONResponse(content={"message": "User not found"}, status_code=404)
-    tasks = TaskService(Session()).getTaskNotDone(userId)
-    return tasks
-
 
 @router.patch('/taskToggle/{taskId}', tags=['Task'], status_code=200, dependencies=[Depends(JWTBearer())])
 def toggleTask(taskId: int):
     task = TaskService(Session()).toggleTask(taskId)
     return JSONResponse(content={"message": "Task toggled successfully"}, status_code=200)
-
 
 # Dependencia para obtener una sesión de base de datos
 @router.post('/task', tags=['Task'], response_model=Task, status_code=201,  dependencies=[Depends(JWTBearer())])
@@ -59,7 +49,7 @@ def createTask(task: Task, request: Request):
     TaskService(Session()).createTask(task, userId)
     return JSONResponse(content={"message": "Task created successfully"}, status_code=201)
 
-@router.put('/task/{taskId}', tags=['Task'], response_model=Task, status_code=200,  dependencies=[Depends(JWTBearer())])
+@router.patch('/task/{taskId}', tags=['Task'], response_model=Task, status_code=200,  dependencies=[Depends(JWTBearer())])
 def updateTaskById(taskId: int, task: Task):
     task = TaskService(Session()).updateTask(taskId, task)
     return JSONResponse(content={"message": "Task updated successfully"}, status_code=200)

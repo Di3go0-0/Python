@@ -17,12 +17,9 @@ class TaskServices:
             return task
         return None
     
-    def getTaskDone(self, userId: int):
-        tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == True).all()
-        return tasks
-    
-    def getTaskNotDone(self, userId: int):
-        tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == False).all()
+
+    def getTaskDontOrNotDone(self, userId: int, done: bool):
+        tasks = self.db.query(TaskModel).filter(TaskModel.userId == userId, TaskModel.done == done).all()
         return tasks
     
     def toggleTask(self, taskId: int):

@@ -46,10 +46,3 @@ def deleteUser(id: int) -> dict:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
     return JSONResponse(content={"message": "User deleted successfully"}, status_code=200)
 
-
-@router.get('/user/{id}', tags=['Auth'], response_model=User)
-def getUser(id: int) -> User:
-    result = AuthService(Session()).getUser(id)
-    if not result:
-        return JSONResponse(content={"message": "User not found"}, status_code=404)
-    return result
