@@ -4,7 +4,8 @@ from fastapi.responses import JSONResponse
 from schemas.userSchema import User
 from config.db import Session
 from services.authServices import AuthService
-from middlewares.jwtBearer import JWTBearer
+# from middlewares.jwtBearer import JWTBearer
+from middlewares.jwtBearer2 import JWTBearer2
 from services.taskServices import TaskServices
 
 
@@ -31,14 +32,14 @@ def login(user: User) -> dict:
     return response
 
 
-@router.post('/logout', tags=['Auth'], response_model=dict, status_code=200)
+@router.post('/logout', tags=['Auth'], response_model=dict, status_code=200, dependencies = [Depends(JWTBearer2())])
 def logout() -> dict:
     response = JSONResponse(content={"message": "Logout successful"}, status_code=200)
     response.delete_cookie(key="token")
     return response
 
 
-@router.delete("/user/{id}", tags=['Auth'], response_model=dict, dependencies = [Depends(JWTBearer())])
+@router.delete("/user/{id}", tags=['Auth'], response_model=dict, dependencies = [Depends(JWTBearer2())])
 def deleteUser(id: int) -> dict:
     TaskServices(Session()).deleteAllTaskByUserId(id)
     result = AuthService(Session()).deleteUser(id)
