@@ -1,0 +1,63 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="shopping-cart">
+    <a class="button outline-dark" href="{% url 'store' %}">← Continue Shopping</a>
+
+    <div class="cart-summary">
+        <table>
+            <tr>
+                <th><h5>Items: <strong>3</strong></h5></th>
+                <th><h5>Total: <strong>$35</strong></h5></th>
+                <th>
+                    <a class="button success" href="{% url 'checkout' %}">Checkout</a>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="cart-items">
+        <div class="cart-row">
+            <div class="item item-title item-image"></div>
+            <div class="item item-title item-description">Item</div>
+            <div class="item item-title item-price">Price</div>
+            <div class="item item-title item-quantity">Quantity</div>
+            <div class="item item-title item-total">Total</div>
+        </div>
+
+        <div class="cart-row">
+            <div class="item item-image">
+                <img src="{% static 'images/placeholder.png' %}" alt="product">
+            </div>
+            <div class="item item-description">Product 1</div>
+            <div class="item item-price">$20</div>
+            <div class="item item-quantity">
+                <p class="quantity">2</p>
+                <div class="quantity-controls">
+                    <img src="{% static 'images/arrow-up.png' %}" alt="plus">
+                    <img src="{% static 'images/arrow-down.png' %}" alt="plus">
+                </div>
+            </div>
+            <div class="item item-total">$40</div>
+        </div>
+
+        <div class="cart-row">
+            <div class="item item-image">
+                <img src="{% static 'images/placeholder.png' %}" alt="product">
+            </div>
+            <div class="item item-description">Product 2</div>
+            <div class="item item-price">$20</div>
+            <div class="item item-quantity">
+                <p class="quantity">2</p>
+                <div class="quantity-controls">
+                    <img src="{% static 'images/arrow-up.png' %}" alt="plus">
+                    <img src="{% static 'images/arrow-down.png' %}" alt="plus">
+                </div>
+            </div>
+            <div class="item item-total">$40</div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock content %}

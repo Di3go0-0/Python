@@ -17,7 +17,6 @@ router = APIRouter()
 @router.get('/task', tags=['Task'], response_model=List[Task], status_code=200, dependencies=[Depends(JWTBearer2())])
 def getTasks(request: Request):
     userId = TaskService(Session()).getIdCurrentUser(request)
-    print(userId)
     tasks = TaskService(Session()).getTasks(userId)
     return tasks
 

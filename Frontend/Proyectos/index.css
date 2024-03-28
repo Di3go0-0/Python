@@ -1,0 +1,25 @@
+body {
+  font-family: Arial, sans-serif; 
+}
+
+.button{
+  border-radius: 50px;
+  background-color: #00ff00;
+  cursor:pointer;
+}
+
+.button:hover {
+  background-color: #833131;
+}
+
+.principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #4a7988;
+  
+}   
+

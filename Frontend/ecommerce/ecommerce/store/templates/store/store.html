@@ -1,0 +1,21 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="grid-container">
+    {% for product in products %}
+        <div class="box-element product">
+            <img class="thumbnail" src="{% static 'images/placeholder.png' %}" alt="product">
+            <h6 class="product-name">{{product.name}}</h6>
+            <hr>
+            <div class="product-footer">
+                <div class="button-group">
+                    <button class="button-add">Add to cart</button>
+                    <a class="button button-view" href="#">View</a>
+                </div>
+                <h4 class="price">${{product.price}}</h4>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}
+

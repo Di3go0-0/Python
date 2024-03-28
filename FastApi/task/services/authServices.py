@@ -7,7 +7,7 @@ class AuthService():
     def __init__(self, db) -> None:
         self.db = db
 
-
+    
     def register(self, user:User): 
         # Comprobar si el correo electrónico ya está en uso
         existingUser = self.db.query(UserModel).filter_by(email=user.email).first()
