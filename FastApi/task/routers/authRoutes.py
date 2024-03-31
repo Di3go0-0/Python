@@ -21,20 +21,29 @@ userLogueado = None
 def register(user: User) -> dict:
     try:
         AuthService(Session()).register(user)
-        token = createToken(user)
-        response = JSONResponse(content={"message": "User created successfully"}, status_code=201)
+        user_dict = user.dict()  # Convertimos el objeto User a un diccionario
+        user_dict = AuthService(Session()).userByEmail(user.email)
+        token = createToken(user_dict)
+
+        response = JSONResponse(content=user_dict, status_code=201)
         response.set_cookie(key="token", value=f"{token}", httponly=True)
         return response
     except ValueError as e:
+        print(e)  # Agregamos esta línea para imprimir la excepción
+        if 'is already in use' in str(e):
+            return JSONResponse(content={"message": "Email is already in use"}, status_code=409)
         return JSONResponse(content={"message": str(e)}, status_code=400)
     except Exception as e:
+        print(e)  # Agregamos esta línea para imprimir la excepción
         return JSONResponse(content={"message": f"Registration failed: {str(e)}"}, status_code=400)
-
+    
 @router.post('/login', tags=['Auth'], response_model=dict, status_code=200)
 def login(user: User) -> dict:
     result = AuthService(Session()).login(user.email, user.password)
-    if not result:  
-        return JSONResponse(content={"message": "Invalid credentials"}, status_code=401)
+    if result == "Not registered":  
+        return JSONResponse(content={"message" : "Not registered"}, status_code=401)
+    if result == "Incorrect password":
+        return JSONResponse(content={"message":"Incorrect password"}, status_code=401)
     token = createToken(result)
     response = JSONResponse(content={"message": "Login successful"}, status_code=200)
     response.set_cookie(key="token", value=f"{token}", httponly=True)
@@ -48,7 +57,7 @@ def logout() -> dict:
     return response
 
 
-@router.delete("/user/{id}", tags=['Auth'], response_model=dict, dependencies = [Depends(JWTBearer2())])
+@router.delete("/user/{id}", tags=['Auth'], response_model=dict )#, dependencies = [Depends(JWTBearer2())])
 def deleteUser(id: int) -> dict:
     TaskServices(Session()).deleteAllTaskByUserId(id)
     result = AuthService(Session()).deleteUser(id)

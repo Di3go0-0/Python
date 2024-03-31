@@ -20,11 +20,17 @@ class AuthService():
         new_user = UserModel(**user.model_dump())
         self.db.add(new_user)
         self.db.commit()
+
+    def userByEmail(self, email:str):
+        user = self.db.query(UserModel).filter(UserModel.email == email).first()
+        return user.toDict() if user else None
                
     def login (self, email:str, password:str):
         user = self.db.query(UserModel).filter(UserModel.email == email).first()
-        if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            return None
+        if not user:
+            return "Not registered"
+        if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+            return "Incorrect password"
         return user.toDict()
     
     def logout (self, token: str):
