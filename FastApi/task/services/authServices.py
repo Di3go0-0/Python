@@ -21,6 +21,14 @@ class AuthService():
         self.db.add(new_user)
         self.db.commit()
 
+    def toDict(self):
+        return {
+            # otros campos aquí
+            "id": self.id,
+            "email": self.email,
+            # no incluir la contraseña
+        }
+        
     def userByEmail(self, email:str):
         user = self.db.query(UserModel).filter(UserModel.email == email).first()
         return user.toDict() if user else None
@@ -47,6 +55,8 @@ class AuthService():
         self.db.delete(user)
         self.db.commit()
         return True
+    
+
         
                
                

@@ -26,7 +26,7 @@ def register(user: User) -> dict:
         token = createToken(user_dict)
 
         response = JSONResponse(content=user_dict, status_code=201)
-        response.set_cookie(key="token", value=f"{token}", httponly=True)
+        response.set_cookie(key="token", value=f"{token}", httponly=True, samesite="None", secure=True)
         return response
     except ValueError as e:
         print(e)  # Agregamos esta línea para imprimir la excepción
@@ -45,8 +45,9 @@ def login(user: User) -> dict:
     if result == "Incorrect password":
         return JSONResponse(content={"message":"Incorrect password"}, status_code=401)
     token = createToken(result)
-    response = JSONResponse(content={"message": "Login successful"}, status_code=200)
-    response.set_cookie(key="token", value=f"{token}", httponly=True)
+    #response = JSONResponse(content={"message": "Login successful"}, status_code=200)
+    response = JSONResponse(content=result, status_code=200)
+    response.set_cookie(key="token", value=f"{token}", samesite="Strict", secure=False)
     return response
 
 
@@ -64,4 +65,10 @@ def deleteUser(id: int) -> dict:
     if not result:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
     return JSONResponse(content={"message": "User deleted successfully"}, status_code=200)
+
+@router.get('/verifyToken', tags=['Auth'], response_model=dict, status_code=200)
+def VerifyToken(token: str = Depends(JWTBearer2())) -> dict:
+    return JSONResponse(content={"message": "Token is valid"}, status_code=200)
+
+
 

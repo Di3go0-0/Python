@@ -15,11 +15,11 @@ function RegisterPage() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/tasks");
-    }
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate("/tasks");
+  //   }
+  // }, [isAuthenticated]);
 
   const onSubmit = handleSubmit((data) => {
     signup(data);

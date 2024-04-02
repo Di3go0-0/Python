@@ -1,5 +1,11 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { RegisterRequest, LoginRequest } from "../api/auth";
+import {
+  RegisterRequest,
+  LoginRequest,
+  LogoutRequest,
+  verifyTokenRequest,
+} from "../api/auth";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -15,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const signup = async (user) => {
     try {
@@ -34,7 +41,9 @@ export const AuthProvider = ({ children }) => {
   const singIn = async (user) => {
     try {
       const res = await LoginRequest(user);
-      console.log(res.data);
+      console.log(res);
+      setIsAuthenticated(true);
+      setUser(res.data);
     } catch (e) {
       if (Array.isArray(e.response.data)) {
         console.log(e.response.data);
@@ -45,6 +54,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = () => {
+    Cookies.remove("token");
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
   useEffect(() => {
     if (errors.length > 0) {
       const timer = setTimeout(() => {
@@ -52,14 +67,40 @@ export const AuthProvider = ({ children }) => {
       }, 5000);
       return () => clearTimeout(timer);
     }
-  })
+  });
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const cookies = Cookies.get();
+      if (!cookies.token) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await verifyTokenRequest();
+        console.log(res);
+        if (!res.data) return setIsAuthenticated(false);
+        setIsAuthenticated(true);
+        setUser(res.data);
+        setLoading(false);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setLoading(false);
+      }
+    };
+    checkLogin();
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
+        user,
         signup,
         singIn,
-        user,
+        logout,
+        loading,
         isAuthenticated,
         errors,
       }}
